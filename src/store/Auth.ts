@@ -5,14 +5,14 @@ import { persist } from "zustand/middleware"
 import { AppwriteException, ID, Models } from "appwrite"
 import { account } from "@/models/client/config"
 
-export interface userPref {
+export interface UserPrefs {
   reputation: number
 }
 
 interface IAuthStore {
   session: Models.Session | null
   jwt: string | null // Changed from String to string (lowercase)
-  user: Models.User<userPref> | null
+  user: Models.User<UserPrefs> | null
   hydrated: boolean
 
   setHydrated(): void
@@ -51,7 +51,7 @@ export const useAuthStore = create<IAuthStore>()(
         try {
           const session = await account.getSession("current")
           const [user, { jwt }] = await Promise.all([
-            account.get<userPref>(),
+            account.get<UserPrefs>(),
             account.createJWT(),
           ])
 
@@ -77,12 +77,12 @@ export const useAuthStore = create<IAuthStore>()(
             password
           )
           const [user, { jwt }] = await Promise.all([
-            account.get<userPref>(),
+            account.get<UserPrefs>(),
             account.createJWT(),
           ])
 
           if (!user.prefs?.reputation) {
-            await account.updatePrefs<userPref>({
+            await account.updatePrefs<UserPrefs>({
               reputation: 0,
             })
           }

@@ -1,6 +1,6 @@
 import { answerCollection, db } from "@/models/name"
 import { databases, users } from "@/models/server/config"
-import { userPref } from "@/store/Auth"
+import { UserPrefs } from "@/store/Auth"
 import { NextRequest, NextResponse } from "next/server"
 import { ID } from "node-appwrite"
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       }
     )
     //Increse author reputation
-    const prefs = await users.getPrefs<userPref>(authorId)
+    const prefs = await users.getPrefs<UserPrefs>(authorId)
     await users.updatePrefs(authorId, {
       reputation: Number(prefs.reputation) + 1,
     })
@@ -49,7 +49,7 @@ export async function DELETE(request: NextRequest) {
     )
 
     //Decrease author reputation
-    const prefs = await users.getPrefs<userPref>(answer.authorId)
+    const prefs = await users.getPrefs<UserPrefs>(answer.authorId)
     await users.updatePrefs(answer.authorId, {
       reputation: Number(prefs.reputation) - 1,
     })
