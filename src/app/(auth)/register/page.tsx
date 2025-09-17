@@ -1,10 +1,10 @@
 "use client"
+import { cn } from "@/lib/utils"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react"
 import { useAuthStore } from "@/store/Auth"
 import React from "react"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { cn } from "@/lib/utils"
-import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react"
 import Link from "next/link"
 
 const BottomGradient = () => {
@@ -30,8 +30,8 @@ const LabelInputContainer = ({
   )
 }
 
-function LoginPage() {
-  const { login } = useAuthStore()
+function RegisterPage() {
+  const { createAccount, login } = useAuthStore()
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState("")
 
@@ -39,36 +39,48 @@ function LoginPage() {
     e.preventDefault()
     //collect data
     const formData = new FormData(e.currentTarget)
-    const email = formData.get("email")
-    const password = formData.get("password")
+    const firstName = formData.get("firstname")?.toString().trim() || ""
+    const lastName = formData.get("lastname")?.toString().trim() || ""
+    const email = formData.get("email")?.toString().trim() || ""
+    const password = formData.get("password")?.toString() || ""
     //validate data
-    if (!email || !password) {
+    if (!firstName || !lastName || !email || !password) {
       setError(() => "All fields are required")
       return
     }
-
     //call the store
     setIsLoading(() => true)
     setError(() => "")
 
-    const loginResponse = await login(email.toString(), password.toString())
-    if (loginResponse.error) {
-      setError(() => loginResponse.error!.message)
+    const response = await createAccount(
+      `${firstName} ${lastName}`,
+      email?.toString(),
+      password?.toString()
+    )
+    if (response.error) {
+      setError(response.error!.message)
+    } else {
+      const loginResponse = await login(email.toString(), password.toString())
+      if (loginResponse.error) {
+        setError(() => loginResponse.error!.message)
+      }
     }
+
     setIsLoading(() => false)
   }
+
   return (
     <div className="mx-auto w-full max-w-md rounded-none border border-solid border-white/30 bg-white p-4 shadow-input dark:bg-black md:rounded-2xl md:p-8">
       <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
-        Login to Riverflow
+        Welcome to Redcode
       </h2>
       <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-        Login to riverflow
-        <br /> If you don&apos;t have an account,{" "}
-        <Link href="/register" className="text-orange-500 hover:underline">
-          register
+        Signup with redcode if you you don&apos;t have an account.
+        <br /> If you already have an account,{" "}
+        <Link href="/login" className="text-orange-500 hover:underline">
+          login
         </Link>{" "}
-        with riverflow
+        to redcode
       </p>
 
       {error && (
@@ -77,10 +89,32 @@ function LoginPage() {
         </p>
       )}
       <form className="my-8" onSubmit={handleSubmit}>
+        <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+          <LabelInputContainer>
+            <Label htmlFor="firstname">First name</Label>
+            <Input
+              className="text-white"
+              id="firstname"
+              name="firstname"
+              placeholder="Tyler"
+              type="text"
+            />
+          </LabelInputContainer>
+          <LabelInputContainer>
+            <Label htmlFor="lastname">Last name</Label>
+            <Input
+              className="text-white"
+              id="lastname"
+              name="lastname"
+              placeholder="Durden"
+              type="text"
+            />
+          </LabelInputContainer>
+        </div>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
           <Input
-            className="text-black"
+            className="text-white"
             id="email"
             name="email"
             placeholder="projectmayhem@fc.com"
@@ -90,7 +124,7 @@ function LoginPage() {
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
           <Input
-            className="text-black"
+            className="text-white"
             id="password"
             name="password"
             placeholder="••••••••"
@@ -103,7 +137,7 @@ function LoginPage() {
           type="submit"
           disabled={isLoading}
         >
-          Log in &rarr;
+          Sign up &rarr;
           <BottomGradient />
         </button>
 
@@ -138,4 +172,4 @@ function LoginPage() {
   )
 }
 
-export default LoginPage
+export default RegisterPage
