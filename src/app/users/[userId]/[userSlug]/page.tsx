@@ -10,16 +10,17 @@ import { IconTrophy, IconMessageQuestion, IconMessage, IconFlame, IconStar } fro
 const Page = async ({
   params,
 }: {
-  params: { userId: string; userSlug: string }
+  params: Promise<{ userId: string; userSlug: string }>
 }) => {
+  const { userId } = await params
   const [user, questions, answers] = await Promise.all([
-    users.get<UserPrefs>(params.userId),
+    users.get<UserPrefs>(userId),
     databases.listDocuments(db, questionCollection, [
-      Query.equal("authorId", params.userId),
+      Query.equal("authorId", userId),
       Query.limit(1),
     ]),
     databases.listDocuments(db, answerCollection, [
-      Query.equal("authorId", params.userId),
+      Query.equal("authorId", userId),
       Query.limit(1),
     ]),
   ])

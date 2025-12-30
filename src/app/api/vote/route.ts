@@ -146,10 +146,12 @@ export async function POST(request: NextRequest) {
         status: 200,
       }
     )
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Error processing vote"
+    const errorCode = (error as { status?: number; code?: number })?.status || (error as { status?: number; code?: number })?.code || 500
     return NextResponse.json(
-      { message: error?.message || "Error deleting answer" },
-      { status: error?.status || error?.code || 500 }
+      { message: errorMessage },
+      { status: errorCode }
     )
   }
 }

@@ -1,7 +1,6 @@
-import { IndexType, Permission } from "node-appwrite"
+import { Permission } from "node-appwrite"
 import { db, questionCollection } from "../name"
 import { databases } from "./config"
-import { log } from "console"
 
 export default async function createQuestionCollection() {
   // Create a new collection
@@ -37,7 +36,8 @@ export default async function createQuestionCollection() {
       "tags",
       50,
       true,
-      undefined
+      undefined,
+      true // array: true - allows tags to be an array of strings
     ),
     databases.createStringAttribute(
       db,

@@ -19,22 +19,23 @@ import { IconMessageQuestion, IconFilter, IconX } from "@tabler/icons-react"
 const Page = async ({
   searchParams,
 }: {
-  searchParams: { page?: string; tag?: string; search?: string }
+  searchParams: Promise<{ page?: string; tag?: string; search?: string }>
 }) => {
-  searchParams.page ||= "1"
+  const { page, tag, search } = await searchParams
+  const currentPage = page || "1"
 
   const queries = [
     Query.orderDesc("$createdAt"),
-    Query.offset((+searchParams.page - 1) * 25),
+    Query.offset((+currentPage - 1) * 25),
     Query.limit(25),
   ]
 
-  if (searchParams.tag) queries.push(Query.equal("tags", searchParams.tag))
-  if (searchParams.search)
+  if (tag) queries.push(Query.equal("tags", tag))
+  if (search)
     queries.push(
       Query.or([
-        Query.search("title", searchParams.search),
-        Query.search("content", searchParams.search),
+        Query.search("title", search),
+        Query.search("content", search),
       ])
     )
 
@@ -111,27 +112,27 @@ const Page = async ({
           <Search />
 
           {/* Active Filters */}
-          {(searchParams.tag || searchParams.search) && (
+          {(tag || search) && (
             <div className="flex flex-wrap items-center gap-2">
               <span className="flex items-center gap-1 text-sm text-gray-400">
                 <IconFilter className="h-4 w-4" />
                 Active filters:
               </span>
-              {searchParams.tag && (
+              {tag && (
                 <Link
-                  href={searchParams.search ? `/questions?search=${searchParams.search}` : "/questions"}
+                  href={search ? `/questions?search=${search}` : "/questions"}
                   className="group flex items-center gap-1 rounded-full bg-orange-500/20 px-3 py-1 text-sm text-orange-400 transition-colors hover:bg-orange-500/30"
                 >
-                  Tag: #{searchParams.tag}
+                  Tag: #{tag}
                   <IconX className="h-3 w-3 opacity-60 group-hover:opacity-100" />
                 </Link>
               )}
-              {searchParams.search && (
+              {search && (
                 <Link
-                  href={searchParams.tag ? `/questions?tag=${searchParams.tag}` : "/questions"}
+                  href={tag ? `/questions?tag=${tag}` : "/questions"}
                   className="group flex items-center gap-1 rounded-full bg-blue-500/20 px-3 py-1 text-sm text-blue-400 transition-colors hover:bg-blue-500/30"
                 >
-                  Search: &quot;{searchParams.search}&quot;
+                  Search: &quot;{search}&quot;
                   <IconX className="h-3 w-3 opacity-60 group-hover:opacity-100" />
                 </Link>
               )}
@@ -152,7 +153,7 @@ const Page = async ({
             {questions.total === 1 ? "question" : "questions"} found
           </p>
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            Page {searchParams.page} of {Math.ceil(questions.total / 25) || 1}
+            Page {currentPage} of {Math.ceil(questions.total / 25) || 1}
           </div>
         </div>
 
@@ -162,7 +163,7 @@ const Page = async ({
             <IconMessageQuestion className="mx-auto mb-4 h-16 w-16 text-gray-600" />
             <p className="text-xl text-gray-400">No questions found</p>
             <p className="mt-2 text-gray-500">
-              {searchParams.search || searchParams.tag
+              {search || tag
                 ? "Try different search terms or filters"
                 : "Be the first to ask a question!"}
             </p>

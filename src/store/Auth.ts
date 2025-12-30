@@ -72,6 +72,14 @@ export const useAuthStore = create<IAuthStore>()(
 
       async login(email: string, password: string) {
         try {
+          // Delete any existing sessions before creating a new one
+          try {
+            await account.deleteSessions()
+          } catch {
+            // Ignore errors if there are no sessions to delete
+            console.log("No existing sessions to delete")
+          }
+
           const session = await account.createEmailPasswordSession(
             email,
             password

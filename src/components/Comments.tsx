@@ -11,18 +11,28 @@ import { ID, Models } from "appwrite"
 import Link from "next/link"
 import React from "react"
 
+export interface CommentDocument extends Models.Document {
+  content: string
+  authorId: string
+  author: {
+    $id: string
+    name: string
+    reputation: number
+  }
+}
+
 const Comments = ({
   comments: _comments,
   type,
   typeId,
   className,
 }: {
-  comments: Models.DocumentList<Models.Document>
+  comments: Models.DocumentList<CommentDocument>
   type: "question" | "answer"
   typeId: string
   className?: string
 }) => {
-  const [comments, setComments] = React.useState(_comments)
+  const [comments, setComments] = React.useState<Models.DocumentList<CommentDocument>>(_comments)
   const [newComment, setNewComment] = React.useState("")
   const { user } = useAuthStore()
 
@@ -46,10 +56,11 @@ const Comments = ({
       setNewComment(() => "")
       setComments((prev) => ({
         total: prev.total + 1,
-        documents: [{ ...response, author: user }, ...prev.documents],
+        documents: [{ ...response, author: user } as unknown as CommentDocument, ...prev.documents],
       }))
-    } catch (error: any) {
-      window.alert(error?.message || "Error creating comment")
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Error creating comment"
+      window.alert(errorMessage)
     }
   }
 
@@ -63,8 +74,9 @@ const Comments = ({
           (comment) => comment.$id !== commentId
         ),
       }))
-    } catch (error: any) {
-      window.alert(error?.message || "Error deleting comment")
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Error deleting comment"
+      window.alert(errorMessage)
     }
   }
 

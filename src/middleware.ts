@@ -5,7 +5,8 @@ import getOrCreateDB from "./models/server/dbSetup"
 import getOrCreateStorage from "./models/server/storage.collection"
 
 // This function can be marked `async` if using `await` inside
-export async function middleware(request: NextRequest) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export async function middleware(_request: NextRequest) {
   await Promise.all([getOrCreateDB(), getOrCreateStorage()])
   return NextResponse.next()
 }

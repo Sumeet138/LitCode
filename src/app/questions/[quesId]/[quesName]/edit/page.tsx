@@ -1,20 +1,21 @@
 import { db, questionCollection } from "@/models/name"
 import { databases } from "@/models/server/config"
 import React from "react"
-import EditQues from "./EditQues"
+import EditQues, { QuestionDocument } from "./EditQues"
 
 const Page = async ({
   params,
 }: {
-  params: { quesId: string; quesName: string }
+  params: Promise<{ quesId: string; quesName: string }>
 }) => {
+  const { quesId } = await params
   const question = await databases.getDocument(
     db,
     questionCollection,
-    params.quesId
+    quesId
   )
 
-  return <EditQues question={question} />
+  return <EditQues question={question as unknown as QuestionDocument} />
 }
 
 export default Page

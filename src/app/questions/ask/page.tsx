@@ -77,7 +77,7 @@ const AskQuestionPage = () => {
                         <p className="max-w-2xl text-lg text-gray-400">
                             Get answers from the community by asking a clear, detailed
                             question. The more context you provide, the better answers
-                            you'll receive.
+                            you&apos;ll receive.
                         </p>
                     </div>
 

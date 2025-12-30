@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion, MotionProps, type AnimationProps } from "motion/react";
+import { motion, MotionProps } from "motion/react";
 import React from "react";
 
 const animationProps = {
@@ -10,24 +10,24 @@ const animationProps = {
   whileTap: { scale: 0.95 },
   transition: {
     repeat: Infinity,
-    repeatType: "loop",
+    repeatType: "loop" as const,
     repeatDelay: 1,
-    type: "spring",
+    type: "spring" as const,
     stiffness: 20,
     damping: 15,
     mass: 2,
     scale: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 200,
       damping: 5,
       mass: 0.5,
     },
   },
-} as AnimationProps;
+};
 
 interface ShinyButtonProps
   extends Omit<React.HTMLAttributes<HTMLElement>, keyof MotionProps>,
-    MotionProps {
+  MotionProps {
   children: React.ReactNode;
   className?: string;
 }

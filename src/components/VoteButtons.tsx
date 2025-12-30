@@ -5,7 +5,7 @@ import { db, voteCollection } from "@/models/name"
 import { useAuthStore } from "@/store/Auth"
 import { cn } from "@/lib/utils"
 import { IconCaretUpFilled, IconCaretDownFilled } from "@tabler/icons-react"
-import { ID, Models, Query } from "appwrite"
+import { Models, Query } from "appwrite"
 import { useRouter } from "next/navigation"
 import React from "react"
 
@@ -32,7 +32,7 @@ const VoteButtons = ({
   const router = useRouter()
 
   React.useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       if (user) {
         const response = await databases.listDocuments(db, voteCollection, [
           Query.equal("type", type),
@@ -66,8 +66,9 @@ const VoteButtons = ({
 
       setVoteResult(() => data.data.voteResult)
       setVotedDocument(() => data.data.document)
-    } catch (error: any) {
-      window.alert(error?.message || "Something went wrong")
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Something went wrong"
+      window.alert(errorMessage)
     }
   }
 
@@ -93,8 +94,9 @@ const VoteButtons = ({
 
       setVoteResult(() => data.data.voteResult)
       setVotedDocument(() => data.data.document)
-    } catch (error: any) {
-      window.alert(error?.message || "Something went wrong")
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Something went wrong"
+      window.alert(errorMessage)
     }
   }
 
@@ -108,7 +110,7 @@ const VoteButtons = ({
       <button
         className={cn(
           "flex h-10 w-10 items-center justify-center rounded-full border p-1 duration-200 hover:bg-white/10",
-          votedDocument && (votedDocument as any).voteStatus === "upvoted"
+          votedDocument && (votedDocument as { voteStatus?: string }).voteStatus === "upvoted"
             ? "border-orange-500 text-orange-500"
             : "border-white/30"
         )}
@@ -120,7 +122,7 @@ const VoteButtons = ({
       <button
         className={cn(
           "flex h-10 w-10 items-center justify-center rounded-full border p-1 duration-200 hover:bg-white/10",
-          votedDocument && (votedDocument as any).voteStatus === "downvoted"
+          votedDocument && (votedDocument as { voteStatus?: string }).voteStatus === "downvoted"
             ? "border-orange-500 text-orange-500"
             : "border-white/30"
         )}

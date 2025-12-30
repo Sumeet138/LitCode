@@ -10,7 +10,6 @@ import {
 
 export const HeroParallax = ({
   products,
-  //fix this
   header,
 }: {
   products: {
@@ -18,8 +17,7 @@ export const HeroParallax = ({
     link: string
     thumbnail: string
   }[]
-  //also this
-  header: React.ReactNode
+  header?: React.ReactNode
 }) => {
   const firstRow = products.slice(0, 5)
   const secondRow = products.slice(5, 10)
@@ -40,6 +38,7 @@ export const HeroParallax = ({
     useTransform(scrollYProgress, [0, 1], [0, -1000]),
     springConfig
   )
+
   const rotateX = useSpring(
     useTransform(scrollYProgress, [0, 0.2], [15, 0]),
     springConfig
@@ -61,7 +60,7 @@ export const HeroParallax = ({
       ref={ref}
       className="h-[300vh] py-40 overflow-hidden  antialiased relative flex flex-col self-auto [perspective:1000px] [transform-style:preserve-3d]"
     >
-      <Header />
+      {header || <Header />}
       <motion.div
         style={{
           rotateX,
@@ -141,6 +140,7 @@ export const ProductCard = ({
       className="group/product h-96 w-[30rem] relative shrink-0"
     >
       <a href={product.link} className="block group-hover/product:shadow-2xl ">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={product.thumbnail}
           height="600"

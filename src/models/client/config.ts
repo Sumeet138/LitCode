@@ -1,9 +1,28 @@
 import env from "@/app/env"
 import { Client, Account, Avatars, Databases, Storage } from "appwrite"
 
-const client = new Client()
-  .setEndpoint(env.appwrite.endpoint) // Your API Endpoint
-  .setProject(env.appwrite.projectId) // Your project ID
+// Extend global to include appwrite client for singleton pattern
+declare global {
+  var appwriteClient: Client | undefined
+}
+
+// Singleton pattern to prevent multiple client instances during hot reloading
+let client: Client
+
+if (typeof window !== "undefined") {
+  // Client-side singleton
+  if (!globalThis.appwriteClient) {
+    globalThis.appwriteClient = new Client()
+      .setEndpoint(env.appwrite.endpoint)
+      .setProject(env.appwrite.projectId)
+  }
+  client = globalThis.appwriteClient
+} else {
+  // Server-side (shouldn't happen for this client config, but just in case)
+  client = new Client()
+    .setEndpoint(env.appwrite.endpoint)
+    .setProject(env.appwrite.projectId)
+}
 
 // Databases
 const databases = new Databases(client)

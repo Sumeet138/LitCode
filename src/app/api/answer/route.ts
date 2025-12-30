@@ -25,13 +25,15 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(response, { status: 201 })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Error creating answer"
+    const errorCode = (error as { status?: number; code?: number })?.status || (error as { status?: number; code?: number })?.code || 500
     return NextResponse.json(
       {
-        error: error?.message || "Error creating answer",
+        error: errorMessage,
       },
       {
-        status: error?.status || error?.code || 500,
+        status: errorCode,
       }
     )
   }
@@ -55,13 +57,15 @@ export async function DELETE(request: NextRequest) {
     })
 
     return NextResponse.json({ data: response }, { status: 200 })
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Error deleting answer"
+    const errorCode = (error as { status?: number; code?: number })?.status || (error as { status?: number; code?: number })?.code || 500
     return NextResponse.json(
       {
-        error: error?.message || "Error deleting answer",
+        error: errorMessage,
       },
       {
-        status: error?.status || error?.code || 500,
+        status: errorCode,
       }
     )
   }

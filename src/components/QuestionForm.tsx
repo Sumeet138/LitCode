@@ -3,7 +3,6 @@
 import RTE from "@/components/RTE"
 import { BorderBeam } from "@/components/magicui/border-beam"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/store/Auth"
 import { cn } from "@/lib/utils"
 import slugify from "@/utils/slugify"
@@ -184,8 +183,9 @@ const QuestionForm = ({ question }: { question?: QuestionType }) => {
       const response = question ? await update() : await create()
 
       router.push(`/questions/${response.$id}/${slugify(formData.title)}`)
-    } catch (error: any) {
-      setError(() => error.message)
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Something went wrong"
+      setError(() => errorMessage)
     }
 
     setLoading(() => false)

@@ -5,7 +5,7 @@ import convertDateToRelativeTime from "@/utils/relativeTime"
 import React from "react"
 import EditButton from "./EditButton"
 import Navbar from "./Navbar"
-import { IconClockFilled, IconUserFilled, IconStar, IconTrophy } from "@tabler/icons-react"
+import { IconClockFilled, IconUserFilled, IconTrophy } from "@tabler/icons-react"
 import { Particles } from "@/components/magicui/particles"
 import { ShineBorder } from "@/components/magicui/shine-border"
 
@@ -14,9 +14,10 @@ const Layout = async ({
   params,
 }: {
   children: React.ReactNode
-  params: { userId: string; userSlug: string }
+  params: Promise<{ userId: string; userSlug: string }>
 }) => {
-  const user = await users.get<UserPrefs>(params.userId)
+  const { userId } = await params
+  const user = await users.get<UserPrefs>(userId)
 
   const getReputationLevel = (reputation: number) => {
     if (reputation >= 1000) return { label: "Legend", color: "from-yellow-500 to-orange-500" }
@@ -41,7 +42,7 @@ const Layout = async ({
         {/* Profile Header Card */}
         <ShineBorder
           className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6 backdrop-blur-sm"
-          color={["#ff7b00", "#ff2975", "#8c1eff"]}
+          shineColor={["#ff7b00", "#ff2975", "#8c1eff"]}
         >
           <div className="flex flex-col gap-6 sm:flex-row">
             {/* Avatar */}
@@ -49,7 +50,7 @@ const Layout = async ({
               <div className="h-32 w-32 overflow-hidden rounded-2xl ring-4 ring-white/10 sm:h-40 sm:w-40">
                 <picture className="block h-full w-full">
                   <img
-                    src={avatars.getInitials(user.name, 200, 200)}
+                    src={avatars.getInitials(user.name, 200, 200).toString()}
                     alt={user.name}
                     className="h-full w-full object-cover"
                   />

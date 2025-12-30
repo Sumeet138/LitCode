@@ -7,7 +7,7 @@ import { Models } from "appwrite"
 import { useRouter } from "next/navigation"
 import React from "react"
 
-interface QuestionDocument extends Models.Document {
+export interface QuestionDocument extends Models.Document {
   authorId: string
   title: string
 }
@@ -20,7 +20,7 @@ const EditQues = ({ question }: { question: QuestionDocument }) => {
     if (question.authorId !== user?.$id) {
       router.push(`/questions/${question.$id}/${slugify(question.title)}`)
     }
-  }, [])
+  }, [question.$id, question.authorId, question.title, router, user?.$id])
 
   if (user?.$id !== question.authorId) return null
 

@@ -16,8 +16,9 @@ interface TagInfo {
 const TagsPage = async ({
     searchParams,
 }: {
-    searchParams: { search?: string }
+    searchParams: Promise<{ search?: string }>
 }) => {
+    const { search } = await searchParams
     // Fetch all questions to extract tags
     const questions = await databases.listDocuments(db, questionCollection, [
         Query.limit(1000),
@@ -41,9 +42,9 @@ const TagsPage = async ({
         .sort((a, b) => b.count - a.count)
 
     // Filter by search if provided
-    if (searchParams.search) {
-        const search = searchParams.search.toLowerCase()
-        tags = tags.filter((tag) => tag.name.toLowerCase().includes(search))
+    if (search) {
+        const searchTerm = search.toLowerCase()
+        tags = tags.filter((tag) => tag.name.toLowerCase().includes(searchTerm))
     }
 
     const totalTags = Object.keys(tagCounts).length
@@ -100,7 +101,7 @@ const TagsPage = async ({
                                     type="text"
                                     name="search"
                                     placeholder="Filter by tag name..."
-                                    defaultValue={searchParams.search || ""}
+                                    defaultValue={search || ""}
                                     className="w-48 rounded-lg border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-sm text-white placeholder-gray-500 outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 md:w-64"
                                 />
                             </div>
@@ -119,16 +120,16 @@ const TagsPage = async ({
                         <BorderBeam size={400} duration={12} delay={5} />
                         <IconHash className="mx-auto mb-4 h-16 w-16 text-gray-600" />
                         <p className="text-xl text-gray-400">
-                            {searchParams.search
-                                ? `No tags found matching "${searchParams.search}"`
+                            {search
+                                ? `No tags found matching "${search}"`
                                 : "No tags found yet."}
                         </p>
                         <p className="mt-2 text-gray-500">
-                            {searchParams.search
+                            {search
                                 ? "Try a different search term."
                                 : "Be the first to ask a question with tags!"}
                         </p>
-                        {!searchParams.search && (
+                        {!search && (
                             <Link
                                 href="/questions/ask"
                                 className="mt-6 inline-block rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-8 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25"

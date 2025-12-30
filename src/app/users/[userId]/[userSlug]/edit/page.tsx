@@ -77,8 +77,9 @@ const EditProfilePage = () => {
       await verifySession()
       setSuccess("Name updated successfully!")
       setTimeout(() => setSuccess(""), 3000)
-    } catch (error: any) {
-      setError(error?.message || "Failed to update name")
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update name"
+      setError(errorMessage)
     }
 
     setLoading(false)
@@ -116,8 +117,9 @@ const EditProfilePage = () => {
         confirmPassword: "",
       }))
       setTimeout(() => setSuccess(""), 3000)
-    } catch (error: any) {
-      setError(error?.message || "Failed to update password")
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update password"
+      setError(errorMessage)
     }
 
     setLoading(false)

@@ -1,5 +1,6 @@
-import Answers from "@/components/Answers"
-import Comments from "@/components/Comments"
+import Answers, { AnswerDocument } from "@/components/Answers"
+import Comments, { CommentDocument } from "@/components/Comments"
+import { Models } from "appwrite"
 import { MarkdownPreview } from "@/components/RTE"
 import VoteButtons from "@/components/VoteButtons"
 import { Particles } from "@/components/magicui/particles"
@@ -30,29 +31,30 @@ import { TracingBeam } from "@/components/ui/tracing-beam"
 const Page = async ({
   params,
 }: {
-  params: { quesId: string; quesName: string }
+  params: Promise<{ quesId: string; quesName: string }>
 }) => {
+  const { quesId } = await params
   const [question, answers, upvotes, downvotes, comments] = await Promise.all([
-    databases.getDocument(db, questionCollection, params.quesId),
+    databases.getDocument(db, questionCollection, quesId),
     databases.listDocuments(db, answerCollection, [
       Query.orderDesc("$createdAt"),
-      Query.equal("questionId", params.quesId),
+      Query.equal("questionId", quesId),
     ]),
     databases.listDocuments(db, voteCollection, [
-      Query.equal("typeId", params.quesId),
+      Query.equal("typeId", quesId),
       Query.equal("type", "question"),
       Query.equal("voteStatus", "upvoted"),
       Query.limit(1),
     ]),
     databases.listDocuments(db, voteCollection, [
-      Query.equal("typeId", params.quesId),
+      Query.equal("typeId", quesId),
       Query.equal("type", "question"),
       Query.equal("voteStatus", "downvoted"),
       Query.limit(1),
     ]),
     databases.listDocuments(db, commentCollection, [
       Query.equal("type", "question"),
-      Query.equal("typeId", params.quesId),
+      Query.equal("typeId", quesId),
       Query.orderDesc("$createdAt"),
     ]),
   ])
@@ -207,7 +209,7 @@ const Page = async ({
                         storage.getFilePreview(
                           questionAttachmentBucket,
                           question.attachmentId
-                        ).href
+                        ).toString()
                       }
                       alt={question.title}
                       className="max-h-96 rounded-xl border border-white/10 object-contain"
@@ -266,7 +268,7 @@ const Page = async ({
                   </div>
                   <picture>
                     <img
-                      src={avatars.getInitials(author.name, 48, 48).href}
+                      src={avatars.getInitials(author.name, 48, 48).toString()}
                       alt={author.name}
                       className="rounded-xl ring-2 ring-white/10"
                     />
@@ -277,7 +279,7 @@ const Page = async ({
 
             {/* Comments */}
             <Comments
-              comments={comments}
+              comments={comments as unknown as Models.DocumentList<CommentDocument>}
               className="mt-6"
               type="question"
               typeId={question.$id}
@@ -287,7 +289,7 @@ const Page = async ({
 
         {/* Answers Section */}
         <div className="mt-10">
-          <Answers answers={answers} questionId={question.$id} />
+          <Answers answers={answers as unknown as Models.DocumentList<AnswerDocument>} questionId={question.$id} />
         </div>
       </div>
     </TracingBeam>
