@@ -2,16 +2,19 @@
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons-react"
+import { IconBrandGithub, IconBrandGoogle, IconCode, IconLock, IconMail, IconUser } from "@tabler/icons-react"
 import { useAuthStore } from "@/store/Auth"
 import React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { Particles } from "@/components/magicui/particles"
+import { BorderBeam } from "@/components/magicui/border-beam"
 
 const BottomGradient = () => {
   return (
     <>
-      <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
-      <span className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />
+      <span className="absolute inset-x-0 -bottom-px block h-px w-full bg-gradient-to-r from-transparent via-orange-500 to-transparent opacity-0 transition duration-500 group-hover/btn:opacity-100" />
+      <span className="absolute inset-x-10 -bottom-px mx-auto block h-px w-1/2 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-0 blur-sm transition duration-500 group-hover/btn:opacity-100" />
     </>
   )
 }
@@ -31,24 +34,35 @@ const LabelInputContainer = ({
 }
 
 function RegisterPage() {
-  const { createAccount, login } = useAuthStore()
+  const { createAccount, login, user, hydrated } = useAuthStore()
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState("")
+  const router = useRouter()
+
+  React.useEffect(() => {
+    if (hydrated && user) {
+      router.push("/")
+    }
+  }, [hydrated, user, router])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    //collect data
     const formData = new FormData(e.currentTarget)
     const firstName = formData.get("firstname")?.toString().trim() || ""
     const lastName = formData.get("lastname")?.toString().trim() || ""
     const email = formData.get("email")?.toString().trim() || ""
     const password = formData.get("password")?.toString() || ""
-    //validate data
+
     if (!firstName || !lastName || !email || !password) {
       setError(() => "All fields are required")
       return
     }
-    //call the store
+
+    if (password.length < 8) {
+      setError(() => "Password must be at least 8 characters")
+      return
+    }
+
     setIsLoading(() => true)
     setError(() => "")
 
@@ -63,6 +77,8 @@ function RegisterPage() {
       const loginResponse = await login(email.toString(), password.toString())
       if (loginResponse.error) {
         setError(() => loginResponse.error!.message)
+      } else {
+        router.push("/")
       }
     }
 
@@ -70,105 +86,149 @@ function RegisterPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-none border border-solid border-white/30 bg-white p-4 shadow-input dark:bg-black md:rounded-2xl md:p-8">
-      <h2 className="text-xl font-bold text-neutral-800 dark:text-neutral-200">
-        Welcome to Redcode
-      </h2>
-      <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-        Signup with redcode if you you don&apos;t have an account.
-        <br /> If you already have an account,{" "}
-        <Link href="/login" className="text-orange-500 hover:underline">
-          login
-        </Link>{" "}
-        to redcode
-      </p>
+    <>
+      <Particles
+        className="fixed inset-0 h-full w-full"
+        quantity={200}
+        ease={100}
+        color="#ffffff"
+        refresh
+      />
+      <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-8 shadow-2xl backdrop-blur-sm">
+        <BorderBeam size={300} duration={12} delay={5} />
 
-      {error && (
-        <p className="mt-8 text-center text-sm text-red-500 dark:text-red-400">
-          {error}
-        </p>
-      )}
-      <form className="my-8" onSubmit={handleSubmit}>
-        <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-          <LabelInputContainer>
-            <Label htmlFor="firstname">First name</Label>
-            <Input
-              className="text-white"
-              id="firstname"
-              name="firstname"
-              placeholder="Tyler"
-              type="text"
-            />
-          </LabelInputContainer>
-          <LabelInputContainer>
-            <Label htmlFor="lastname">Last name</Label>
-            <Input
-              className="text-white"
-              id="lastname"
-              name="lastname"
-              placeholder="Durden"
-              type="text"
-            />
-          </LabelInputContainer>
+        {/* Logo Section */}
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-pink-500">
+            <IconCode className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-2xl font-bold text-transparent">
+            Join LitCode
+          </h2>
+          <p className="mt-2 text-sm text-gray-400">
+            Create your account and start sharing knowledge with developers worldwide
+          </p>
         </div>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="email">Email Address</Label>
-          <Input
-            className="text-white"
-            id="email"
-            name="email"
-            placeholder="projectmayhem@fc.com"
-            type="email"
-          />
-        </LabelInputContainer>
-        <LabelInputContainer className="mb-4">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            className="text-white"
-            id="password"
-            name="password"
-            placeholder="••••••••"
-            type="password"
-          />
-        </LabelInputContainer>
 
-        <button
-          className="group/btn relative block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-          type="submit"
-          disabled={isLoading}
-        >
-          Sign up &rarr;
-          <BottomGradient />
-        </button>
+        {error && (
+          <div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-center text-sm text-red-400">
+            {error}
+          </div>
+        )}
 
-        <div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-2 gap-4">
+            <LabelInputContainer>
+              <Label htmlFor="firstname" className="flex items-center gap-2 text-gray-300">
+                <IconUser className="h-4 w-4" />
+                First name
+              </Label>
+              <Input
+                className="border-white/10 bg-white/5 text-white placeholder-gray-500 focus:border-orange-500/50 focus:ring-orange-500/50"
+                id="firstname"
+                name="firstname"
+                placeholder="John"
+                type="text"
+              />
+            </LabelInputContainer>
+            <LabelInputContainer>
+              <Label htmlFor="lastname" className="text-gray-300">
+                Last name
+              </Label>
+              <Input
+                className="border-white/10 bg-white/5 text-white placeholder-gray-500 focus:border-orange-500/50 focus:ring-orange-500/50"
+                id="lastname"
+                name="lastname"
+                placeholder="Doe"
+                type="text"
+              />
+            </LabelInputContainer>
+          </div>
+          <LabelInputContainer>
+            <Label htmlFor="email" className="flex items-center gap-2 text-gray-300">
+              <IconMail className="h-4 w-4" />
+              Email Address
+            </Label>
+            <Input
+              className="border-white/10 bg-white/5 text-white placeholder-gray-500 focus:border-orange-500/50 focus:ring-orange-500/50"
+              id="email"
+              name="email"
+              placeholder="you@example.com"
+              type="email"
+            />
+          </LabelInputContainer>
+          <LabelInputContainer>
+            <Label htmlFor="password" className="flex items-center gap-2 text-gray-300">
+              <IconLock className="h-4 w-4" />
+              Password
+            </Label>
+            <Input
+              className="border-white/10 bg-white/5 text-white placeholder-gray-500 focus:border-orange-500/50 focus:ring-orange-500/50"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+              type="password"
+            />
+            <p className="text-xs text-gray-500">Must be at least 8 characters</p>
+          </LabelInputContainer>
 
-        <div className="flex flex-col space-y-4">
           <button
-            className="group/btn relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black shadow-input dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="button"
+            className="group/btn relative flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 font-medium text-white transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25 disabled:opacity-50"
+            type="submit"
             disabled={isLoading}
           >
-            <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">
+            {isLoading ? (
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <>
+                Create Account
+                <BottomGradient />
+              </>
+            )}
+          </button>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-black px-4 text-gray-500">Or sign up with</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              className="group/btn relative flex h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 font-medium text-white transition-all duration-300 hover:bg-white/10"
+              type="button"
+              disabled={isLoading}
+            >
+              <IconBrandGoogle className="h-5 w-5" />
               Google
-            </span>
-            <BottomGradient />
-          </button>
-          <button
-            className="group/btn relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black shadow-input dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
-            type="button"
-            disabled={isLoading}
-          >
-            <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
-            <span className="text-sm text-neutral-700 dark:text-neutral-300">
+              <BottomGradient />
+            </button>
+            <button
+              className="group/btn relative flex h-11 items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 font-medium text-white transition-all duration-300 hover:bg-white/10"
+              type="button"
+              disabled={isLoading}
+            >
+              <IconBrandGithub className="h-5 w-5" />
               GitHub
-            </span>
-            <BottomGradient />
-          </button>
-        </div>
-      </form>
-    </div>
+              <BottomGradient />
+            </button>
+          </div>
+        </form>
+
+        <p className="mt-8 text-center text-sm text-gray-400">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-orange-500 transition-colors hover:text-orange-400"
+          >
+            Sign in
+          </Link>
+        </p>
+      </div>
+    </>
   )
 }
 

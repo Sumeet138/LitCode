@@ -1,14 +1,14 @@
 "use client"
 
 import RTE from "@/components/RTE"
-import { Meteors } from "@/components/magicui/meteors"
+import { BorderBeam } from "@/components/magicui/border-beam"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuthStore } from "@/store/Auth"
 import { cn } from "@/lib/utils"
 import slugify from "@/utils/slugify"
-import { IconX } from "@tabler/icons-react"
-import { Models, ID } from "appwrite"
+import { IconX, IconPhoto, IconTags, IconTextCaption, IconFileText, IconLoader2 } from "@tabler/icons-react"
+import { ID } from "appwrite"
 import { useRouter } from "next/navigation"
 import React from "react"
 import { databases, storage } from "@/models/client/config"
@@ -18,28 +18,42 @@ import confetti from "canvas-confetti"
 const LabelInputContainer = ({
   children,
   className,
+  icon: Icon,
+  title,
+  description,
 }: {
   children: React.ReactNode
   className?: string
+  icon?: React.ElementType
+  title?: string
+  description?: string
 }) => {
   return (
     <div
       className={cn(
-        "relative flex w-full flex-col space-y-2 overflow-hidden rounded-xl border border-white/20 bg-slate-950 p-4",
+        "relative flex w-full flex-col space-y-4 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6",
         className
       )}
     >
-      <Meteors number={30} />
+      <BorderBeam size={200} duration={12} delay={Math.random() * 10} />
+      {Icon && title && (
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500/20 to-pink-500/20">
+            <Icon className="h-5 w-5 text-orange-500" />
+          </div>
+          <div>
+            <h3 className="font-medium text-white">{title}</h3>
+            {description && (
+              <p className="text-sm text-gray-400">{description}</p>
+            )}
+          </div>
+        </div>
+      )}
       {children}
     </div>
   )
 }
 
-/**
- * ******************************************************************************
- * ![INFO]: for buttons, refer to https://ui.aceternity.com/components/tailwindcss-buttons
- * ******************************************************************************
- */
 type QuestionType = {
   $id: string
   title?: string
@@ -66,8 +80,8 @@ const QuestionForm = ({ question }: { question?: QuestionType }) => {
   const [error, setError] = React.useState("")
 
   const loadConfetti = (timeInMS = 3000) => {
-    const end = Date.now() + timeInMS // 3 seconds
-    const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"]
+    const end = Date.now() + timeInMS
+    const colors = ["#ff7b00", "#ff2975", "#8c1eff", "#ffd319"]
 
     const frame = () => {
       if (Date.now() > end) return
@@ -158,7 +172,6 @@ const QuestionForm = ({ question }: { question?: QuestionType }) => {
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    // didn't check for attachment because it's optional in updating
     if (!formData.title || !formData.content || !formData.authorId) {
       setError(() => "Please fill out all fields")
       return
@@ -179,43 +192,37 @@ const QuestionForm = ({ question }: { question?: QuestionType }) => {
   }
 
   return (
-    <form className="space-y-4" onSubmit={submit}>
+    <form className="space-y-6" onSubmit={submit}>
       {error && (
-        <LabelInputContainer>
-          <div className="text-center">
-            <span className="text-red-500">{error}</span>
-          </div>
-        </LabelInputContainer>
+        <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-red-400">
+          <IconX className="h-5 w-5 shrink-0" />
+          {error}
+        </div>
       )}
-      <LabelInputContainer>
-        <Label htmlFor="title">
-          Title Address
-          <br />
-          <small>
-            Be specific and imagine you&apos;re asking a question to another
-            person.
-          </small>
-        </Label>
+
+      <LabelInputContainer
+        icon={IconTextCaption}
+        title="Question Title"
+        description="Be specific and imagine you're asking a question to another person."
+      >
         <Input
           id="title"
           name="title"
-          placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
+          placeholder="e.g. How to center a div in CSS?"
           type="text"
           value={formData.title}
           onChange={(e) =>
             setFormData((prev) => ({ ...prev, title: e.target.value }))
           }
+          className="border-white/10 bg-white/5 text-white placeholder-gray-500 focus:border-orange-500/50"
         />
       </LabelInputContainer>
-      <LabelInputContainer>
-        <Label htmlFor="content">
-          What are the details of your problem?
-          <br />
-          <small>
-            Introduce the problem and expand on what you put in the title.
-            Minimum 20 characters.
-          </small>
-        </Label>
+
+      <LabelInputContainer
+        icon={IconFileText}
+        title="Question Details"
+        description="Introduce the problem and expand on what you put in the title. Minimum 20 characters."
+      >
         <RTE
           value={formData.content}
           onChange={(value) =>
@@ -223,53 +230,75 @@ const QuestionForm = ({ question }: { question?: QuestionType }) => {
           }
         />
       </LabelInputContainer>
-      <LabelInputContainer>
-        <Label htmlFor="image">
-          Image
-          <br />
-          <small>
-            Add image to your question to make it more clear and easier to
-            understand.
-          </small>
-        </Label>
-        <Input
-          id="image"
-          name="image"
-          accept="image/*"
-          placeholder="e.g. Is there an R function for finding the index of an element in a vector?"
-          type="file"
-          onChange={(e) => {
-            const files = e.target.files
-            if (!files || files.length === 0) return
-            setFormData((prev) => ({
-              ...prev,
-              attachment: files[0],
-            }))
-          }}
-        />
+
+      <LabelInputContainer
+        icon={IconPhoto}
+        title="Attachment (Required)"
+        description="Add an image to make your question clearer and easier to understand."
+      >
+        <div className="flex items-center gap-4">
+          <label
+            htmlFor="image"
+            className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
+          >
+            <IconPhoto className="h-5 w-5" />
+            {formData.attachment ? formData.attachment.name : "Choose an image..."}
+          </label>
+          <input
+            id="image"
+            name="image"
+            accept="image/*"
+            type="file"
+            className="hidden"
+            onChange={(e) => {
+              const files = e.target.files
+              if (!files || files.length === 0) return
+              setFormData((prev) => ({
+                ...prev,
+                attachment: files[0],
+              }))
+            }}
+          />
+          {formData.attachment && (
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, attachment: null }))}
+              className="rounded-lg p-2 text-red-400 hover:bg-red-500/10"
+            >
+              <IconX className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </LabelInputContainer>
-      <LabelInputContainer>
-        <Label htmlFor="tag">
-          Tags
-          <br />
-          <small>
-            Add tags to describe what your question is about. Start typing to
-            see suggestions.
-          </small>
-        </Label>
-        <div className="flex w-full gap-4">
-          <div className="w-full">
-            <Input
-              id="tag"
-              name="tag"
-              placeholder="e.g. (java c objective-c)"
-              type="text"
-              value={tag}
-              onChange={(e) => setTag(() => e.target.value)}
-            />
-          </div>
+
+      <LabelInputContainer
+        icon={IconTags}
+        title="Tags"
+        description="Add tags to describe what your question is about. Press Enter or click Add to add a tag."
+      >
+        <div className="flex w-full gap-3">
+          <Input
+            id="tag"
+            name="tag"
+            placeholder="e.g. javascript, react, css"
+            type="text"
+            value={tag}
+            onChange={(e) => setTag(() => e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault()
+                if (tag.length === 0) return
+                setFormData((prev) => ({
+                  ...prev,
+                  tags: new Set([...Array.from(prev.tags), tag]),
+                }))
+                setTag("")
+              }
+            }}
+            className="border-white/10 bg-white/5 text-white placeholder-gray-500 focus:border-orange-500/50"
+          />
           <button
-            className="relative shrink-0 rounded-full border border-slate-600 bg-slate-700 px-8 py-2 text-sm text-white transition duration-200 hover:shadow-2xl hover:shadow-white/[0.1]"
+            className="shrink-0 rounded-xl bg-gradient-to-r from-orange-500/20 to-pink-500/20 px-6 py-2 font-medium text-orange-400 transition-all duration-300 hover:from-orange-500/30 hover:to-pink-500/30"
             type="button"
             onClick={() => {
               if (tag.length === 0) return
@@ -277,48 +306,52 @@ const QuestionForm = ({ question }: { question?: QuestionType }) => {
                 ...prev,
                 tags: new Set([...Array.from(prev.tags), tag]),
               }))
-              setTag(() => "")
+              setTag("")
             }}
           >
-            <div className="absolute inset-x-0 -top-px mx-auto h-px w-1/2 bg-gradient-to-r from-transparent via-teal-500 to-transparent shadow-2xl" />
-            <span className="relative z-20">Add</span>
+            Add
           </button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {Array.from(formData.tags).map((tag, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <div className="group relative inline-block rounded-full bg-slate-800 p-px text-xs font-semibold leading-6 text-white no-underline shadow-2xl shadow-zinc-900">
-                <span className="absolute inset-0 overflow-hidden rounded-full">
-                  <span className="absolute inset-0 rounded-full bg-[image:radial-gradient(75%_100%_at_50%_0%,rgba(56,189,248,0.6)_0%,rgba(56,189,248,0)_75%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                </span>
-                <div className="relative z-10 flex items-center space-x-2 rounded-full bg-zinc-950 px-4 py-0.5 ring-1 ring-white/10">
-                  <span>{tag}</span>
-                  <button
-                    onClick={() => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        tags: new Set(
-                          Array.from(prev.tags).filter((t) => t !== tag)
-                        ),
-                      }))
-                    }}
-                    type="button"
-                  >
-                    <IconX size={12} />
-                  </button>
-                </div>
-                <span className="absolute -bottom-0 left-[1.125rem] h-px w-[calc(100%-2.25rem)] bg-gradient-to-r from-emerald-400/0 via-emerald-400/90 to-emerald-400/0 transition-opacity duration-500 group-hover:opacity-40" />
+        {formData.tags.size > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {Array.from(formData.tags).map((tagItem, index) => (
+              <div
+                key={index}
+                className="group flex items-center gap-2 rounded-lg bg-orange-500/20 px-3 py-1.5 text-sm font-medium text-orange-400"
+              >
+                <span>#{tagItem}</span>
+                <button
+                  onClick={() => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      tags: new Set(
+                        Array.from(prev.tags).filter((t) => t !== tagItem)
+                      ),
+                    }))
+                  }}
+                  type="button"
+                  className="opacity-60 transition-opacity hover:opacity-100"
+                >
+                  <IconX size={14} />
+                </button>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </LabelInputContainer>
+
       <button
-        className="inline-flex h-12 animate-shimmer items-center justify-center rounded-md border border-slate-800 bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] px-6 font-medium text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50"
+        className="flex h-14 w-full items-center justify-center rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 text-lg font-bold text-white transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/25 disabled:opacity-50"
         type="submit"
         disabled={loading}
       >
-        {question ? "Update" : "Publish"}
+        {loading ? (
+          <IconLoader2 className="h-6 w-6 animate-spin" />
+        ) : question ? (
+          "Update Question"
+        ) : (
+          "Publish Question"
+        )}
       </button>
     </form>
   )

@@ -3,45 +3,50 @@
 import Link from "next/link"
 import { useParams, usePathname } from "next/navigation"
 import React from "react"
+import { IconUser, IconMessageQuestion, IconMessage, IconThumbUp } from "@tabler/icons-react"
+
+const navItems = [
+  { name: "Summary", path: "", icon: IconUser },
+  { name: "Questions", path: "/questions", icon: IconMessageQuestion },
+  { name: "Answers", path: "/answers", icon: IconMessage },
+  { name: "Votes", path: "/votes", icon: IconThumbUp },
+]
 
 const Navbar = () => {
   const { userId, userSlug } = useParams()
   const pathname = usePathname()
-
-  const items = [
-    {
-      name: "Summary",
-      href: `/users/${userId}/${userSlug}`,
-    },
-    {
-      name: "Questions",
-      href: `/users/${userId}/${userSlug}/questions`,
-    },
-    {
-      name: "Answers",
-      href: `/users/${userId}/${userSlug}/answers`,
-    },
-    {
-      name: "Votes",
-      href: `/users/${userId}/${userSlug}/votes`,
-    },
-  ]
+  const basePath = `/users/${userId}/${userSlug}`
 
   return (
-    <ul className="flex w-full shrink-0 gap-1 overflow-auto sm:w-40 sm:flex-col">
-      {items.map((item) => (
-        <li key={item.name}>
-          <Link
-            href={item.href}
-            className={`block w-full rounded-full px-3 py-0.5 duration-200 ${
-              pathname === item.href ? "bg-white/20" : "hover:bg-white/20"
-            }`}
-          >
-            {item.name}
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <nav className="w-full shrink-0 lg:w-48">
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-2 backdrop-blur-sm">
+        <ul className="flex gap-1 overflow-auto lg:flex-col">
+          {navItems.map((item) => {
+            const href = `${basePath}${item.path}`
+            const isActive = pathname === href
+            const Icon = item.icon
+
+            return (
+              <li key={item.name}>
+                <Link
+                  href={href}
+                  className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${isActive
+                      ? "bg-gradient-to-r from-orange-500/20 to-pink-500/20 text-orange-400"
+                      : "text-gray-400 hover:bg-white/5 hover:text-white"
+                    }`}
+                >
+                  <Icon className={`h-5 w-5 shrink-0 ${isActive ? "text-orange-500" : ""}`} />
+                  <span className="whitespace-nowrap">{item.name}</span>
+                  {isActive && (
+                    <span className="ml-auto h-2 w-2 rounded-full bg-orange-500" />
+                  )}
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
+    </nav>
   )
 }
 

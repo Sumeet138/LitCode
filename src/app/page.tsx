@@ -1,113 +1,137 @@
-import Image from "next/image"
+import HeroSectionHeader from "./components/HeroSectionHeader"
+import LatestQuestions from "./components/LatestQuestions"
+import TopContributers from "./components/TopContributers"
+import Link from "next/link"
+import { IconArrowRight, IconMessageQuestion, IconTrophy, IconCode, IconUsers } from "@tabler/icons-react"
+
+const features = [
+  {
+    icon: IconMessageQuestion,
+    title: "Ask Questions",
+    description: "Get expert answers to your programming challenges",
+    gradient: "from-orange-500 to-pink-500",
+  },
+  {
+    icon: IconCode,
+    title: "Share Knowledge",
+    description: "Help others by answering their questions",
+    gradient: "from-blue-500 to-cyan-500",
+  },
+  {
+    icon: IconTrophy,
+    title: "Build Reputation",
+    description: "Earn recognition for your contributions",
+    gradient: "from-purple-500 to-pink-500",
+  },
+  {
+    icon: IconUsers,
+    title: "Join Community",
+    description: "Connect with developers worldwide",
+    gradient: "from-green-500 to-emerald-500",
+  },
+]
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <main>
+      {/* Hero Section */}
+      <section className="relative min-h-screen py-20">
+        <HeroSectionHeader />
+      </section>
+
+      {/* Features Section */}
+      <section className="relative border-t border-white/10 bg-black/50 py-20">
+        <div className="container mx-auto px-4">
+          <div className="mb-12 text-center">
+            <h2 className="mb-4 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
+              Why Choose LitCode?
+            </h2>
+            <p className="mx-auto max-w-2xl text-gray-400">
+              A modern platform designed for developers who want to learn, share, and grow together
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
+              >
+                <div
+                  className={`mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${feature.gradient} p-0.5`}
+                >
+                  <div className="flex h-full w-full items-center justify-center rounded-[10px] bg-black">
+                    <feature.icon className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-white">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-gray-400">{feature.description}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+      {/* Latest Questions & Top Contributors */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="flex flex-col-reverse gap-10 lg:flex-row">
+          {/* Latest Questions */}
+          <div className="flex-1">
+            <div className="mb-8 flex items-center justify-between">
+              <h2 className="flex items-center gap-3 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-2xl font-bold text-transparent md:text-3xl">
+                <IconMessageQuestion className="h-8 w-8 text-orange-500" />
+                Latest Questions
+              </h2>
+              <Link
+                href="/questions"
+                className="group flex items-center gap-1 text-sm font-medium text-orange-500 transition-colors hover:text-orange-400"
+              >
+                View all
+                <IconArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+            <LatestQuestions />
+          </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
+          {/* Top Contributors */}
+          <div className="lg:w-80 xl:w-96">
+            <div className="mb-8">
+              <h2 className="flex items-center gap-3 bg-gradient-to-r from-white to-gray-400 bg-clip-text text-2xl font-bold text-transparent md:text-3xl">
+                <IconTrophy className="h-8 w-8 text-orange-500" />
+                Top Contributors
+              </h2>
+            </div>
+            <TopContributers />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="border-t border-white/10 bg-gradient-to-b from-black to-orange-950/20 py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">
+            Ready to get started?
           </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
+          <p className="mx-auto mb-8 max-w-xl text-gray-400">
+            Join thousands of developers who are already using LitCode to solve problems and share knowledge.
           </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <Link
+              href="/register"
+              className="rounded-full bg-gradient-to-r from-orange-500 to-pink-500 px-8 py-3 font-bold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-orange-500/25"
+            >
+              Create Free Account
+            </Link>
+            <Link
+              href="/questions"
+              className="rounded-full border border-white/20 bg-white/5 px-8 py-3 font-medium text-white transition-all duration-300 hover:bg-white/10"
+            >
+              Browse Questions
+            </Link>
+          </div>
+        </div>
+      </section>
     </main>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 import React from "react"
 import { FloatingNav } from "@/components/ui/floating-navbar"
-import { IconHome, IconMessage, IconWorldQuestion } from "@tabler/icons-react"
+import { IconHome, IconMessage, IconWorldQuestion, IconTags, IconUser } from "@tabler/icons-react"
 import { useAuthStore } from "@/store/Auth"
 import slugify from "@/utils/slugify"
 
@@ -21,6 +21,11 @@ export default function Header() {
         <IconWorldQuestion className="h-4 w-4 text-neutral-500 dark:text-white" />
       ),
     },
+    {
+      name: "Tags",
+      link: "/tags",
+      icon: <IconTags className="h-4 w-4 text-neutral-500 dark:text-white" />,
+    },
   ]
 
   if (user)
@@ -28,7 +33,7 @@ export default function Header() {
       name: "Profile",
       link: `/users/${user.$id}/${slugify(user.name)}`,
       icon: (
-        <IconMessage className="h-4 w-4 text-neutral-500 dark:text-white" />
+        <IconUser className="h-4 w-4 text-neutral-500 dark:text-white" />
       ),
     })
 
