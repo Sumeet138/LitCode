@@ -77,12 +77,17 @@ const AskQuestionPage = () => {
                         <p className="max-w-2xl text-lg text-gray-400">
                             Get answers from the community by asking a clear, detailed
                             question. The more context you provide, the better answers
-                            you&apos;ll receive.
+                            you'll receive.
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap gap-8 lg:flex-row-reverse">
-                        {/* Tips Sidebar */}
+                    <div className="flex flex-col gap-8 lg:flex-row">
+                        {/* Question Form - Primary Content */}
+                        <div className="w-full lg:w-2/3">
+                            <QuestionForm />
+                        </div>
+
+                        {/* Tips Sidebar - Secondary Content */}
                         <div className="w-full lg:w-1/3">
                             <div className="sticky top-28">
                                 <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6 backdrop-blur-sm">
@@ -138,11 +143,6 @@ const AskQuestionPage = () => {
                                     </ul>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* Question Form */}
-                        <div className="w-full lg:w-2/3">
-                            <QuestionForm />
                         </div>
                     </div>
                 </div>
