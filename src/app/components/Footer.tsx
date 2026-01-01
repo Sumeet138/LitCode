@@ -4,8 +4,8 @@ import { IconBrandGithub, IconBrandTwitter, IconBrandDiscord, IconCode, IconHear
 
 const Footer = () => {
   const socialLinks = [
-    { icon: IconBrandGithub, href: "https://github.com", label: "GitHub" },
-    { icon: IconBrandTwitter, href: "https://twitter.com", label: "Twitter" },
+    { icon: IconBrandGithub, href: "https://github.com/Sumeet138", label: "GitHub" },
+    { icon: IconBrandTwitter, href: "https://x.com/SumitGond28", label: "Twitter" },
     { icon: IconBrandDiscord, href: "https://discord.com", label: "Discord" },
   ]
 

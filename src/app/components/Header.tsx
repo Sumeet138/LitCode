@@ -6,7 +6,7 @@ import { useAuthStore } from "@/store/Auth"
 import slugify from "@/utils/slugify"
 
 export default function Header() {
-  const { user } = useAuthStore()
+  const { user, hydrated } = useAuthStore()
 
   const navItems = [
     {
@@ -39,7 +39,7 @@ export default function Header() {
 
   return (
     <div className="relative w-full">
-      <FloatingNav navItems={navItems} />
+      <FloatingNav navItems={navItems} user={user} hydrated={hydrated} />
     </div>
   )
 }
