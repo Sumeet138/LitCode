@@ -1,9 +1,8 @@
 "use client"
 import React from "react"
 import { FloatingNav } from "@/components/ui/floating-navbar"
-import { IconHome, IconWorldQuestion, IconTags, IconUser } from "@tabler/icons-react"
+import { IconHome, IconWorldQuestion, IconTags } from "@tabler/icons-react"
 import { useAuthStore } from "@/store/Auth"
-import slugify from "@/utils/slugify"
 
 export default function Header() {
   const { user, hydrated } = useAuthStore()
@@ -27,15 +26,6 @@ export default function Header() {
       icon: <IconTags className="h-4 w-4 text-neutral-500 dark:text-white" />,
     },
   ]
-
-  if (user)
-    navItems.push({
-      name: "Profile",
-      link: `/users/${user.$id}/${slugify(user.name)}`,
-      icon: (
-        <IconUser className="h-4 w-4 text-neutral-500 dark:text-white" />
-      ),
-    })
 
   return (
     <div className="relative w-full">

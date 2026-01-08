@@ -141,8 +141,15 @@ export const useAuthStore = create<IAuthStore>()(
     {
       name: "auth",
       onRehydrateStorage() {
-        return (state, error) => {
-          if (!error) state?.setHydrated()
+        return async (state, error) => {
+          if (!error && state) {
+            // Verify session with the backend after rehydrating from localStorage
+            // This ensures the auth state is current before marking as hydrated
+            await state.verifySession()
+            state.setHydrated()
+          } else if (state) {
+            state.setHydrated()
+          }
         }
       },
     }
